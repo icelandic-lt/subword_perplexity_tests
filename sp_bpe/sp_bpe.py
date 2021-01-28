@@ -51,10 +51,10 @@ if __name__ == "__main__":
     t0 = time.time()
 
 
-    training_set = '../../LM_corpus/demo_files/small_train_corpus'
-    test_set = '../../LM_corpus/demo_files/small_test_corpus'
-    #training_set = '../../LM_corpus/rmh_train'
-    #test_set = '../../LM_corpus/rmh_test'
+    #training_set = '../../LM_corpus/demo_files/small_train_corpus'
+    #test_set = '../../LM_corpus/demo_files/small_test_corpus'
+    training_set = '../../LM_corpus/rmh_train_smaller'
+    test_set = '../../LM_corpus/rmh_test_smaller'
 
 
     # Parameters
@@ -68,8 +68,9 @@ if __name__ == "__main__":
 
     model_prefix = join(code, 'spm'+str(vocab_size))
 
+    model='bpe'
 
-    print('Training a sentence piece model')
+    print(f'Training a {model} model')
 
     # vocab_size - type: int32 default: 8000
     # model_type - unigram, char, word, bpe
@@ -82,12 +83,12 @@ if __name__ == "__main__":
     spm.SentencePieceTrainer.train(input=training_set, \
                                 model_prefix=model_prefix, \
                                 vocab_size=vocab_size, \
-                                model_type='bpe', \
+                                model_type=model, \
                                 normalization_rule_name='identity', \
-                                max_sentencepiece_length=32,\
-                                train_extremely_large_corpus=False)
+                                max_sentencepiece_length=64,\
+                                train_extremely_large_corpus=False) #Increase bit depth for unigram tokenization
     t1 = time.time()
-    print(f"Training a sentence piece model {t1-t0} sek")
+    print(f"Training a {model} model {t1-t0} sek")
 
     sp = spm.SentencePieceProcessor()
     sp.load(model_prefix+'.model')
@@ -99,5 +100,5 @@ if __name__ == "__main__":
                     shell=True, \
                     stderr=STDOUT)
 
-
-print(f"Total runtime: {t_end-t0} sek")
+    t_end = time.time()
+    print(f"Total runtime: {t_end-t0} sek")

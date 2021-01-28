@@ -1,4 +1,3 @@
-
 def parse(i_path:str, o_path:str, model):
     with open(i_path) as f_in:
         with open(o_path, 'w') as f_out:            
@@ -50,11 +49,10 @@ if __name__ == "__main__":
 
     t0 = time.time()
 
-
     #training_set = '../../LM_corpus/demo_files/small_train_corpus'
     #test_set = '../../LM_corpus/demo_files/small_test_corpus'
-    training_set = '../../LM_corpus/rmh_train'
-    test_set = '../../LM_corpus/rmh_test'
+    training_set = '../../LM_corpus/rmh_train_smaller'
+    test_set = '../../LM_corpus/rmh_test_smaller'
 
 
     # Parameters
@@ -68,16 +66,27 @@ if __name__ == "__main__":
 
     model_prefix = join(code, 'spm'+str(vocab_size))
 
+    model='UNIGRAM'
 
-    print('Training a sentence piece model')
+    print(f'Training a {model} model')
+
+    # vocab_size - type: int32 default: 8000
+    # model_type - unigram, char, word, bpe
+    # normalization_rule_name - (Normalization rule name. Choose from nfkc or identity) identity means no normalization
+    # train_extremely_large_corpus - Increase bit depth for unigram tokenization.) 
+    # all flags are here https://github.com/google/sentencepiece/blob/master/doc/options.md
+    # Colab demo here https://colab.research.google.com/github/google/sentencepiece/blob/master/python/sentencepiece_python_module_example.ipynb#scrollTo=Lf5Fs_pPIKif
+    # max_sentencepiece_length (maximum length of sentence piece)  type: int32 default: 16
 
     spm.SentencePieceTrainer.train(input=training_set, \
                                 model_prefix=model_prefix, \
                                 vocab_size=vocab_size, \
-                                model_type=unigram, \
-                                train_extremely_large_corpus=true)
+                                model_type=model, \
+                                normalization_rule_name='identity', \
+                                max_sentencepiece_length=32,\
+                                train_extremely_large_corpus=True) #Increase bit depth for unigram tokenization
     t1 = time.time()
-    print(f"Training a sentence piece model {t1-t0} sek")
+    print(f"Training a {model} model {t1-t0} sek")
 
     sp = spm.SentencePieceProcessor()
     sp.load(model_prefix+'.model')
@@ -89,5 +98,6 @@ if __name__ == "__main__":
                     shell=True, \
                     stderr=STDOUT)
 
+    t_end = time.time()
 
-print(f"Total runtime: {t_end-t0} sek")
+    print(f"Total runtime: {t_end-t0} sek")

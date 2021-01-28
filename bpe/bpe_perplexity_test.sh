@@ -17,18 +17,20 @@ num_merges=$1
 # A parameter used to dicripe the current 
 # test e.g. bpe1000 meaning bpe with 1000 merges.
 lang=$2
-lang="${lang}_${num_merges}"
+lang="${num_merges}_${lang}"
 
 # Path to the folder where the corpus is located
 corpus_folder=/home/derik/work/language_models/LM_corpus
 
 # Name of our training corpus
 #training_corpus=${corpus_folder}/demo_files/small_train_corpus
-training_corpus=${corpus_folder}/rmh_train
+#training_corpus=${corpus_folder}/rmh_train
+training_corpus=${corpus_folder}/rmh_train_smaller
 
 # Name of our test corpus 
 #test_corpus=${corpus_folder}/demo_files/small_test_corpus
-test_corpus=${corpus_folder}/rmh_test
+#test_corpus=${corpus_folder}/rmh_test
+test_corpus=${corpus_folder}/rmh_test_smaller
 
 order=6
 stage=0
