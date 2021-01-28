@@ -15,21 +15,25 @@ start=`date +%s`
 
 # A parameter used to dicripe the current 
 # test e.g. bpe1000 meaning bpe with 1000 merges.
+
 lang=$1
-lex_size=$2
+
+# The parameter that we are going to change
+alpha=$2 # Controls how aggresivly the algorithm will segment the words
+lang="${alpha}_${lang}"
 
 # Path to the folder where the corpus is located
 corpus_folder=/home/derik/work/language_models/LM_corpus
 
 # Name of our training corpus
-training_corpus=${corpus_folder}/demo_files/small_train_corpus
-#training_corpus=${corpus_folder}/rmh_train
+#training_corpus=${corpus_folder}/demo_files/small_train_corpus
+training_corpus=${corpus_folder}/rmh_train_half
 
 # Name of our test corpus 
-test_corpus=${corpus_folder}/demo_files/small_test_corpus
-#test_corpus=${corpus_folder}/rmh_test
+#test_corpus=${corpus_folder}/demo_files/small_test_corpus
+test_corpus=${corpus_folder}/rmh_test_half
 
-stage=5
+stage=0
 
 mkdir -p $lang
 
@@ -55,7 +59,7 @@ if [ $stage -le 3 ]; then
     echo "$0: Performing Morfessor EM+Prune training"
     morfessor --em-prune $lang/freq_substr \
               --traindata $training_corpus \
-              --num-morph-types $lex_size \
+              --num-morph-types $alpha \
               --save-segmentation $lang/emprune.model
 fi
 
@@ -92,3 +96,43 @@ if [ $stage -le 5 ]; then
     echo "$0: Applying segments to training text"
     python3 apply_segments_to_text.py $lang/rmh_training_segments $training_corpus $lang/rmh_training
 fi
+
+stage_five=`date +%s`
+runtime="Applying BPE to text files took $((stage_five-stage_four)) sek"
+echo $runtime
+echo "Total runtime is $((stage_five-start)) sek"
+
+if [ $stage -le 6 ]; then
+  echo "=== Building a language model with KenLM"
+  module load kenlm
+
+  lmplz --skip_symbols \
+        -o $order \
+        -S 70% \
+        -T /tmp \
+        --prune 0 0 0 1 5 10\
+        --discount_fallback 1 \
+        --text $lang/rmh_training \
+        --arpa $lang/kenlm_${order}g.arpa || error 1 "lmplz failed"
+        
+  build_binary $lang/kenlm_${order}g.arpa $lang/kenlm_${order}g.binary || error 1 "build_binary failed"
+fi
+
+stage_five=`date +%s`
+runtime="Creating LM took $((stage_six-stage_five)) sek"
+echo $runtime
+echo "Total runtime is $((stage_six-start)) sek"
+
+if [ $stage -le 3 ]; then
+  echo "=== Calculating perplexity"
+  module load kenlm
+  
+  query -v summary $lang/kenlm_${order}g.binary < $lang/rmh_test > $lang/perplexity || echo "query failed"
+
+  cat $lang/perplexity
+fi
+
+stage_seven=`date +%s`
+runtime="Calculating perplexity took $((stage_seven-stage_six)) sek"
+echo $runtime
+echo "Total runtime is $((stage_seven-start)) sek"

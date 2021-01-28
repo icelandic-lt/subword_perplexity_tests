@@ -10,13 +10,12 @@ fi
 
 # Lets clock the runtime
 start=`date +%s`
-
-# The parameter that we are going to change
-num_merges=$1
-
 # A parameter used to dicripe the current 
 # test e.g. bpe1000 meaning bpe with 1000 merges.
-lang=$2
+lang=$1
+
+# The parameter that we are going to change
+num_merges=$2
 lang="${num_merges}_${lang}"
 
 # Path to the folder where the corpus is located
