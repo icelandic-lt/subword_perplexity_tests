@@ -24,6 +24,8 @@ This project has been created by the [Language and Voice Lab](https://lvl.ru.is/
 
 This project lacks some information about the exact dataset preparation steps and therefore cannot be reproduced as-is. Additionally, the exact dependencies are unknown and therefore it might be difficult to reproduce with the current code. However, the scripts can be used as a starting point for similar experiments.
 
+The findings are certainly useful for other LT areas, like e.g. foundation models, TTS, etc.
+
 ## Description
 
 Icelandic is an inflective language and new words are constantly being created by compounding words together. Finding successful ways of handling both all the different grammatical surface forms of words, and the many compounds is crucial to reducing the rate of unknown words in Language technology tasks.
@@ -46,7 +48,7 @@ The corpus we used was the older version of the Icelandic Gigaword Corpus ([IGC]
 ### Evaluation
 The corpus was split into the train and test subset, using the 9:1 ratio, with a minimum sentence overlap. We used KenLM to create 6-gram LMs using the corpus that had been tokenized with each of the above methods. BPE and Unigram are dependent on a hyperparameter that controls the token count and finding the correct number of modelled subword units is an open question. Finally, we evaluated the created LMs in terms of their perplexity on the test subset of the text corpora in terms of the token count.
 
-Fig. H13.1 plots the obtained perplexities as a function of subword unit count (lower numbers are better)
+Fig. H13.1 plots the obtained perplexities (lower numbers are better) as a function of subword unit count:
 
 
 ![Figure H13.1: Perplexity of the LMs as a function of subword unit count](doc/perpl_vs_subword_cnt.jpg)
